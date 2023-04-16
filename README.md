@@ -74,25 +74,46 @@ The lambda will be called with each array item in turn.
 As with `JSONStreamer`, a `ParseOptions` object may be passed as a parameter to the constructor or the `pipeTo` function
 if required.
 
+## Non-Blocking
+
+Non-blocking versions of these classes are available, using the
+[`co-pipelines`](https://github.com/pwall567/co-pipelines) library.
+
+The `JSONCoStreamer` class operates in the same manner as `JSONStreamer`, except that the `accept` function is a suspend
+function.
+This is likely to be of little utility since the `accept` function does not invoke any non-blocking functions; it is
+provided mainly to act as the terminal `CoAcceptor` in a pipeline.
+
+The `JSONCoPipeline` class is much more interesting.
+The downstream function which receives completed array items is called as a suspend function, meaning that each item in
+the array may be processed as it arrives, in a non-blocking manner.
+
+For example:
+```kotlin
+        val pipeline = JSONCoPipeline.pipeTo {
+            invokeSuspendFunction(it)
+        }
+```
+
 ## Dependency Specification
 
-The latest version of the library is 0.1, and it may be obtained from the Maven Central repository.
+The latest version of the library is 0.2, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-stream</artifactId>
-      <version>0.1</version>
+      <version>0.2</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-stream:0.1"
+    implementation "io.kjson:kjson-stream:0.2"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-stream:0.1")
+    implementation("io.kjson:kjson-stream:0.2")
 ```
 
 Peter Wall
