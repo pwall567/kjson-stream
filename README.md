@@ -97,25 +97,25 @@ For example:
 
 ## Dependency Specification
 
-The latest version of the library is 0.2, and it may be obtained from the Maven Central repository.
+The latest version of the library is 0.3, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-stream</artifactId>
-      <version>0.2</version>
+      <version>0.3</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-stream:0.2"
+    implementation "io.kjson:kjson-stream:0.3"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-stream:0.2")
+    implementation("io.kjson:kjson-stream:0.3")
 ```
 
 Peter Wall
 
-2023-04-16
+2023-04-23
