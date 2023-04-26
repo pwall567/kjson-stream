@@ -25,11 +25,12 @@
 
 package io.kjson
 
-import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.expect
+import kotlinx.coroutines.runBlocking
 
 import net.pwall.pipeline.ListCoAcceptor
+import net.pwall.pipeline.accept
 
 class JSONCoPipelineTest {
 

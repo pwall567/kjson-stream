@@ -28,9 +28,10 @@ package io.kjson
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.test.expect
+import kotlinx.coroutines.runBlocking
 
 import io.kjson.JSON.asString
-import kotlinx.coroutines.runBlocking
+import net.pwall.pipeline.accept
 
 class JSONCoStreamerTest {
 
