@@ -25,6 +25,7 @@
 
 package io.kjson
 
+import io.kjson.JSONStreamer.Companion.getAssembler
 import io.kjson.JSONStreamer.State
 import io.kjson.parser.ParseException
 import io.kjson.parser.ParseOptions
@@ -33,12 +34,7 @@ import io.kjson.parser.ParserConstants.rootPointer
 import io.kjson.parser.ParserErrors.EXCESS_CHARS
 import io.kjson.parser.ParserErrors.ILLEGAL_SYNTAX
 import io.kjson.parser.ParserErrors.JSON_INCOMPLETE
-import io.kjson.stream.ArrayAssembler
 import io.kjson.stream.Assembler
-import io.kjson.stream.KeywordAssembler
-import io.kjson.stream.NumberAssembler
-import io.kjson.stream.ObjectAssembler
-import io.kjson.stream.StringAssembler
 import net.pwall.json.JSONFunctions.isSpaceCharacter
 import net.pwall.pipeline.AbstractIntCoAcceptor
 
@@ -86,21 +82,6 @@ class JSONCoStreamer(private val parseOptions: ParseOptions = ParseOptions.DEFAU
                     throw ParseException(EXCESS_CHARS)
             }
         }
-    }
-
-    companion object {
-
-        internal fun getAssembler(ch: Char, parseOptions: ParseOptions, pointer: String): Assembler = when (ch) {
-            '{' -> ObjectAssembler(parseOptions, pointer)
-            '[' -> ArrayAssembler(parseOptions, pointer)
-            '"' -> StringAssembler(pointer)
-            '-', in '0'..'9' -> NumberAssembler(ch, pointer)
-            't' -> KeywordAssembler("true", JSONBoolean.TRUE, pointer)
-            'f' -> KeywordAssembler("false", JSONBoolean.FALSE, pointer)
-            'n' -> KeywordAssembler("null", null, pointer)
-            else -> throw ParseException(ILLEGAL_SYNTAX, pointer)
-        }
-
     }
 
 }

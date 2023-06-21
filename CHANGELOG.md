@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Changed
 - `JSONStreamer`: added `parse()` function
+- `JSONCoStreamer`: removed duplicated code
 
 ## [1.3] - 2023-06-04
 ### Changed
