@@ -25,6 +25,8 @@
 
 package io.kjson
 
+import java.io.Reader
+
 import io.kjson.parser.ParseException
 import io.kjson.parser.ParseOptions
 import io.kjson.parser.ParserConstants.BOM
@@ -98,6 +100,11 @@ class JSONStreamer(private val parseOptions: ParseOptions = ParseOptions.DEFAULT
             'n' -> KeywordAssembler("null", null, pointer)
             else -> throw ParseException(ILLEGAL_SYNTAX, pointer)
         }
+
+        fun parse(reader: Reader, parseOptions: ParseOptions = ParseOptions.DEFAULT): JSONValue? =
+            JSONStreamer(parseOptions).also {
+                it.accept(reader)
+            }.result
 
     }
 

@@ -28,6 +28,7 @@ package io.kjson
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.test.expect
+import java.io.StringReader
 
 import io.kjson.JSON.asString
 
@@ -71,6 +72,15 @@ class JSONStreamerTest {
         with(streamer.result) {
             assertTrue(this is JSONInt)
             expect(0) { value }
+        }
+    }
+
+    @Test fun `should parse a Reader`() {
+        val reader = StringReader("""{"reader":"works"}""")
+        with(JSONStreamer.parse(reader)) {
+            assertTrue(this is JSONObject)
+            expect(1) { size }
+            expect("works") { this["reader"].asString }
         }
     }
 
