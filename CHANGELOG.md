@@ -3,9 +3,12 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Added
+- `JSONLinesPipeline`, `JSONLinesCoPipeline`
 ### Changed
 - `JSONStreamer`: added `parse()` function
 - `JSONCoStreamer`: removed duplicated code
+- `pom.xml`: updated dependency versions
 
 ## [1.3] - 2023-06-04
 ### Changed

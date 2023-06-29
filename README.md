@@ -34,7 +34,9 @@ good example.
 UTF-8 encoding is both a one-to-one and a one-to-many transform (only the characters outside the ASCII range will
 transform into more than one output byte); JSON parsing is clearly a many-to-one transform.
 
-## `JSONStreamer`
+## Streaming Input
+
+### `JSONStreamer`
 
 The `JSONStreamer` class assembles input characters into a single value.
 For example:
@@ -56,11 +58,19 @@ This allows the `JSONStreamer` class to be used in a decoding pipeline with char
         val json = streamer.result
 ```
 
-To allow [lenient parsing](https://github.com/pwall567/kjson-core#lenient-parsing) as described in the
-[`kjson-core`](https://github.com/pwall567/kjson-core) library, the `JSONStreamer` constructor takes an optional
-`ParseOptions` parameter.
+For those cases where the `JSONStreamer` is required to read the entire contents of a `Reader`:
+```kotlin
+        val json = JSONStreamer.parse(reader)
+```
 
-## `JSONPipeline`
+The result is a `JSONValue?`,  the same as would be obtained by calling `JSON.parse(reader.readText())`, but this
+approach does not require the allocation of a `String` in memory to hold the entire JSON text.
+
+To allow [lenient parsing](https://github.com/pwall567/kjson-core#lenient-parsing) as described in the
+[`kjson-core`](https://github.com/pwall567/kjson-core) library, the `JSONStreamer` constructor and the `parse()`
+function both take an optional `ParseOptions` parameter.
+
+### `JSONPipeline`
 
 The `JSONPipeline` class expects its input to be in the form of a JSON array, and it emits each array item in turn to
 the downstream `Acceptor`.
@@ -79,10 +89,14 @@ if required.
 Non-blocking versions of these classes are available, using the
 [`co-pipelines`](https://github.com/pwall567/co-pipelines) library.
 
+### `JSONCoStreamer`
+
 The `JSONCoStreamer` class operates in the same manner as `JSONStreamer`, except that the `accept` function is a suspend
 function.
 This is likely to be of little utility since the `accept` function does not invoke any non-blocking functions; it is
 provided mainly to act as the terminal `CoAcceptor` in a pipeline.
+
+### `JSONCoPipeline`
 
 The `JSONCoPipeline` class is much more interesting.
 The downstream function which receives completed array items is called as a suspend function, meaning that each item in
@@ -94,28 +108,71 @@ For example:
             invokeSuspendFunction(it)
         }
 ```
+Code in a different coroutine may now send data to `pipeline`, and the suspend function will be invoked with each
+completed array item.
+
+## JSON Lines
+
+The [JSON Lines](https://jsonlines.org/) specification allows multiple JSON values to be specified in a single stream of
+data, separated by newline (`\u000a`) characters.
+For example, events may be logged to a file as a sequence of objects on separate lines; the alternative would be to
+output a JSON array, but this would require a "`]`" terminator, complicating the shutdown of the process (particularly
+abnormal shutdown).
+
+```json lines
+{"time":"2023-06-24T12:24:10.321+10:00","eventType":"ACCOUNT_OPEN","accountNumber": "123456789"}
+{"time":"2023-06-24T12:24:10.321+10:00","eventType":"DEPOSIT","accountNumber": "123456789","amount":"1000.00"}
+```
+
+The individual items are usually objects (or sometimes arrays) formatted similarly, but that is not a requirement
+&ndash; the items may be of any JSON type.
+
+The `kjson-stream` library includes classes to process JSON Lines input in a streaming manner.
+
+### `JSONLinesPipeline`
+
+The `JSONLinesPipeline` is similar to `JSONPipeline`, except that it expects its input to take the form of a JSON Lines
+data stream rather than a JSON array.
+Like `JSONPipeline`, it can be instantiated using a constructor with an `Acceptor` parameter, or by the `pipeTo`
+function:
+```kotlin
+        val pipeline = JSONLinesPipeline.pipeTo { processitem(it) }
+```
+The lambda will be invoked with each individual JSON value (note that a JSON Lines item may be the keyword "`null`", in
+which case the parameter to the lambda will be `null`).
+
+### `JSONLinesCoPipeline`
+
+`JSONLinesCoPipeline` is the non-blocking equivalent of `JSONLinesPipeline`.
+It can be instantiated using a constructor with a `CoAcceptor` parameter, or by the `pipeTo` function, which in this
+case takes a `suspend` lambda:
+```kotlin
+        val pipeline = JSONLinesCoPipeline.pipeTo {
+            invokeSuspendFunction(it)
+        }
+```
 
 ## Dependency Specification
 
-The latest version of the library is 1.3, and it may be obtained from the Maven Central repository.
+The latest version of the library is 1.4, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-stream</artifactId>
-      <version>1.3</version>
+      <version>1.4</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-stream:1.3"
+    implementation "io.kjson:kjson-stream:1.4"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-stream:1.3")
+    implementation("io.kjson:kjson-stream:1.4)
 ```
 
 Peter Wall
 
-2023-06-04
+2023-06-27

@@ -46,6 +46,7 @@ import net.pwall.pipeline.Acceptor
  * values as they are completed.
  *
  * @author  Peter Wall
+ * @param   <R>     the pipeline result type
  */
 class JSONPipeline<R> internal constructor(
     downstream: Acceptor<JSONValue?, R>,
