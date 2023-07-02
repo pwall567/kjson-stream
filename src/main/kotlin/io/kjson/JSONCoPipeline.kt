@@ -51,13 +51,14 @@ class JSONCoPipeline<R> internal constructor(
     downstream: CoAcceptor<JSONValue?, R>,
     private val parseOptions: ParseOptions,
     private val pointer: String,
+    private val depth: Int,
     private var state: State = State.FIRST, // the internal constructor assumes open bracket already seen
 ) : AbstractIntObjectCoPipeline<JSONValue?, R>(downstream) {
 
     constructor(
         downstream: CoAcceptor<JSONValue?, R>,
         parseOptions: ParseOptions = ParseOptions.DEFAULT,
-    ) : this(downstream, parseOptions, rootPointer, State.BOM_POSSIBLE)
+    ) : this(downstream, parseOptions, rootPointer, 0, State.BOM_POSSIBLE)
 
     private var child: Assembler = Assembler.NullAssembler
     private var count = 0
@@ -93,7 +94,7 @@ class JSONCoPipeline<R> internal constructor(
                         if (ch == ']')
                             state = State.COMPLETE
                         else {
-                            child = JSONStreamer.getAssembler(ch, parseOptions, "$pointer/$count")
+                            child = JSONStreamer.getAssembler(ch, parseOptions, "$pointer/$count", depth)
                             state = State.CHILD
                         }
                     }
@@ -107,7 +108,7 @@ class JSONCoPipeline<R> internal constructor(
                                 throw ParseException(TRAILING_COMMA_ARRAY)
                         }
                         else {
-                            child = JSONStreamer.getAssembler(ch, parseOptions, "$pointer/$count")
+                            child = JSONStreamer.getAssembler(ch, parseOptions, "$pointer/$count", depth)
                             State.CHILD
                         }
                     }
@@ -147,7 +148,7 @@ class JSONCoPipeline<R> internal constructor(
             parseOptions: ParseOptions = ParseOptions.DEFAULT,
             pointer: String = rootPointer,
             block: suspend (JSONValue?) -> Unit,
-        ): JSONCoPipeline<Unit> = JSONCoPipeline(CoAcceptorAdapter(block), parseOptions, pointer, State.BOM_POSSIBLE)
+        ): JSONCoPipeline<Unit> = JSONCoPipeline(CoAcceptorAdapter(block), parseOptions, pointer, 0, State.BOM_POSSIBLE)
 
     }
 

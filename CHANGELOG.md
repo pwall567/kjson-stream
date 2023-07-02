@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `JSONStreamer`: added `parse()` function
 - `JSONCoStreamer`: removed duplicated code
 - `pom.xml`: updated dependency versions
+- `ArrayAssembler`, `ObjectAssembler`, `JSONCoPipeline`, `JSONCoStreamer`, `JSONPipeline`, `JSONStreamer`: added check
+  for excessive nesting
 
 ## [1.3] - 2023-06-04
 ### Changed

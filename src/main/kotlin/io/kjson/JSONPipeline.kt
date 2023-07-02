@@ -52,13 +52,14 @@ class JSONPipeline<R> internal constructor(
     downstream: Acceptor<JSONValue?, R>,
     private val parseOptions: ParseOptions,
     private val pointer: String,
+    private val depth: Int,
     private var state: State = State.FIRST, // the internal constructor assumes open bracket already seen
 ) : AbstractIntObjectPipeline<JSONValue?, R>(downstream), IntConsumer {
 
     constructor(
         downstream: Acceptor<JSONValue?, R>,
         parseOptions: ParseOptions = ParseOptions.DEFAULT,
-    ) : this(downstream, parseOptions, rootPointer, State.BOM_POSSIBLE)
+    ) : this(downstream, parseOptions, rootPointer, 0, State.BOM_POSSIBLE)
 
     enum class State { BOM_POSSIBLE, INITIAL, FIRST, CONTINUATION, CHILD, COMMA_EXPECTED, COMPLETE }
 
@@ -95,7 +96,7 @@ class JSONPipeline<R> internal constructor(
                         if (ch == ']')
                             state = State.COMPLETE
                         else {
-                            child = JSONStreamer.getAssembler(ch, parseOptions, "$pointer/$count")
+                            child = JSONStreamer.getAssembler(ch, parseOptions, "$pointer/$count", depth)
                             state = State.CHILD
                         }
                     }
@@ -109,7 +110,7 @@ class JSONPipeline<R> internal constructor(
                                 throw ParseException(TRAILING_COMMA_ARRAY)
                         }
                         else {
-                            child = JSONStreamer.getAssembler(ch, parseOptions, "$pointer/$count")
+                            child = JSONStreamer.getAssembler(ch, parseOptions, "$pointer/$count", depth)
                             State.CHILD
                         }
                     }
@@ -149,7 +150,7 @@ class JSONPipeline<R> internal constructor(
             parseOptions: ParseOptions = ParseOptions.DEFAULT,
             pointer: String = rootPointer,
             block: (JSONValue?) -> Unit,
-        ): JSONPipeline<Unit> = JSONPipeline(AcceptorAdapter(block), parseOptions, pointer, State.BOM_POSSIBLE)
+        ): JSONPipeline<Unit> = JSONPipeline(AcceptorAdapter(block), parseOptions, pointer, 0, State.BOM_POSSIBLE)
 
     }
 

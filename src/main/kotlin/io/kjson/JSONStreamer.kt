@@ -65,13 +65,13 @@ class JSONStreamer(private val parseOptions: ParseOptions = ParseOptions.DEFAULT
             State.BOM_POSSIBLE -> {
                 state = State.INITIAL
                 if (ch != BOM && !isSpaceCharacter(ch)) {
-                    child = getAssembler(ch, parseOptions, rootPointer)
+                    child = getAssembler(ch, parseOptions, rootPointer, 0)
                     state = State.CHILD
                 }
             }
             State.INITIAL -> {
                 if (!isSpaceCharacter(ch)) {
-                    child = getAssembler(ch, parseOptions, rootPointer)
+                    child = getAssembler(ch, parseOptions, rootPointer, 0)
                     state = State.CHILD
                 }
             }
@@ -90,9 +90,14 @@ class JSONStreamer(private val parseOptions: ParseOptions = ParseOptions.DEFAULT
 
     companion object {
 
-        internal fun getAssembler(ch: Char, parseOptions: ParseOptions, pointer: String): Assembler = when (ch) {
-            '{' -> ObjectAssembler(parseOptions, pointer)
-            '[' -> ArrayAssembler(parseOptions, pointer)
+        internal fun getAssembler(
+            ch: Char,
+            parseOptions: ParseOptions,
+            pointer: String,
+            depth: Int,
+        ): Assembler = when (ch) {
+            '{' -> ObjectAssembler(parseOptions, pointer, depth + 1)
+            '[' -> ArrayAssembler(parseOptions, pointer, depth + 1)
             '"' -> StringAssembler(pointer)
             '-', in '0'..'9' -> NumberAssembler(ch, pointer)
             't' -> KeywordAssembler("true", JSONBoolean.TRUE, pointer)

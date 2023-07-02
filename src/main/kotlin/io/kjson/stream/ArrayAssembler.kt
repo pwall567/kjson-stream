@@ -31,6 +31,7 @@ import io.kjson.JSONValue
 import io.kjson.parser.ParseException
 import io.kjson.parser.ParseOptions
 import io.kjson.parser.ParserErrors.ARRAY_INCOMPLETE
+import io.kjson.parser.ParserErrors.MAX_DEPTH_EXCEEDED
 import io.kjson.util.AcceptorAdapter
 
 /**
@@ -38,10 +39,15 @@ import io.kjson.util.AcceptorAdapter
  *
  * @author  Peter Wall
  */
-class ArrayAssembler(parseOptions: ParseOptions, pointer: String) : Assembler {
+class ArrayAssembler(parseOptions: ParseOptions, pointer: String, depth: Int) : Assembler {
+
+    init {
+        if (depth >= parseOptions.maximumNestingDepth)
+            throw ParseException(MAX_DEPTH_EXCEEDED)
+    }
 
     private val list = mutableListOf<JSONValue?>()
-    private val pipeline = JSONPipeline(AcceptorAdapter { list.add(it) }, parseOptions, pointer)
+    private val pipeline = JSONPipeline(AcceptorAdapter { list.add(it) }, parseOptions, pointer, depth)
 
     override val complete: Boolean
         get() = pipeline.isComplete

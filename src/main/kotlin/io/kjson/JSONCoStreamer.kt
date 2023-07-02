@@ -61,13 +61,13 @@ class JSONCoStreamer(private val parseOptions: ParseOptions = ParseOptions.DEFAU
             State.BOM_POSSIBLE -> {
                 state = State.INITIAL
                 if (ch != BOM && !isSpaceCharacter(ch)) {
-                    child = getAssembler(ch, parseOptions, rootPointer)
+                    child = getAssembler(ch, parseOptions, rootPointer, 0)
                     state = State.CHILD
                 }
             }
             State.INITIAL -> {
                 if (!isSpaceCharacter(ch)) {
-                    child = getAssembler(ch, parseOptions, rootPointer)
+                    child = getAssembler(ch, parseOptions, rootPointer, 0)
                     state = State.CHILD
                 }
             }

@@ -36,6 +36,7 @@ import io.kjson.parser.ParserConstants.identifierStartSet
 import io.kjson.parser.ParserErrors.DUPLICATE_KEY
 import io.kjson.parser.ParserErrors.ILLEGAL_KEY
 import io.kjson.parser.ParserErrors.ILLEGAL_SYNTAX
+import io.kjson.parser.ParserErrors.MAX_DEPTH_EXCEEDED
 import io.kjson.parser.ParserErrors.MISSING_COLON
 import io.kjson.parser.ParserErrors.MISSING_COMMA_OBJECT
 import io.kjson.parser.ParserErrors.OBJECT_INCOMPLETE
@@ -47,7 +48,16 @@ import net.pwall.json.JSONFunctions.isSpaceCharacter
  *
  * @author  Peter Wall
  */
-class ObjectAssembler(private val parseOptions: ParseOptions, private val pointer: String) : Assembler {
+class ObjectAssembler(
+    private val parseOptions: ParseOptions,
+    private val pointer: String,
+    private val depth: Int,
+) : Assembler {
+
+    init {
+        if (depth >= parseOptions.maximumNestingDepth)
+            throw ParseException(MAX_DEPTH_EXCEEDED)
+    }
 
     enum class State { INITIAL, CONTINUATION, UNQUOTED_ID, KEYWORD, COLON_EXPECTED, ENTRY, CHILD, COMMA_EXPECTED,
             COMPLETE }
@@ -139,7 +149,7 @@ class ObjectAssembler(private val parseOptions: ParseOptions, private val pointe
                 }
                 State.ENTRY -> {
                     if (!isSpaceCharacter(ch)) {
-                        child = getAssembler(ch, parseOptions, "$pointer/${entries.size}")
+                        child = getAssembler(ch, parseOptions, "$pointer/${entries.size}", depth)
                         state = State.CHILD
                     }
                 }

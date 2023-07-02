@@ -62,13 +62,13 @@ class JSONLinesCoPipeline<R>(
             State.BOM_POSSIBLE -> {
                 state = State.INITIAL
                 if (ch != BOM && !isSpaceCharacter(ch)) {
-                    child = getAssembler(ch, parseOptions, "/$count")
+                    child = getAssembler(ch, parseOptions, "/$count", 0)
                     state = State.CHILD
                 }
             }
             State.INITIAL -> {
                 if (!isSpaceCharacter(ch)) {
-                    child = getAssembler(ch, parseOptions, "/$count")
+                    child = getAssembler(ch, parseOptions, "/$count", 0)
                     state = State.CHILD
                 }
             }

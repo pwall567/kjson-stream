@@ -44,7 +44,7 @@ import io.kjson.parser.ParserConstants.rootPointer
 class ObjectAssemblerTest {
 
     @Test fun `should create empty object`() {
-        val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer)
+        val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         assertFalse(assembler.complete)
         assertFalse(assembler.valid)
         assembler.accept('}')
@@ -56,7 +56,7 @@ class ObjectAssemblerTest {
     }
 
     @Test fun `should create object with a single entry`() {
-        val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer)
+        val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         for (ch in "\"first\":0}") {
             assertFalse(assembler.complete)
             assertFalse(assembler.valid)
@@ -71,7 +71,7 @@ class ObjectAssemblerTest {
     }
 
     @Test fun `should create object with two entries`() {
-        val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer)
+        val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         for (ch in """"first":1,"second":2}""") {
             assertFalse(assembler.complete)
             assertFalse(assembler.valid)
@@ -87,7 +87,7 @@ class ObjectAssemblerTest {
     }
 
     @Test fun `should create object with complex mix of entries`() {
-        val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer)
+        val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         for (ch in """"first":"tiger","second":false,"third":123,"fourth":[111,222],"fifth":null,"last":7.5}""") {
             assertFalse(assembler.complete)
             assertFalse(assembler.valid)
@@ -112,7 +112,7 @@ class ObjectAssemblerTest {
     }
 
     @Test fun `should fail on trailing comma when option not set`() {
-        val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer)
+        val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         for (ch in """ "a":111,"b":222, """)
             assembler.accept(ch)
         assertFailsWith<ParseException> { assembler.accept('}') }.let {
@@ -122,7 +122,7 @@ class ObjectAssemblerTest {
 
     @Test fun `should accept trailing comma when option set`() {
         val parseOptions = ParseOptions(objectTrailingComma = true)
-        val assembler = ObjectAssembler(parseOptions, rootPointer)
+        val assembler = ObjectAssembler(parseOptions, rootPointer, 0)
         for (ch in """ "a":111,"b":222,} """)
             assembler.accept(ch)
         assertTrue(assembler.valid)
@@ -135,7 +135,7 @@ class ObjectAssemblerTest {
     }
 
     @Test fun `should fail on missing comma`() {
-        val assembler = ObjectAssembler(ParseOptions.DEFAULT, "/test8")
+        val assembler = ObjectAssembler(ParseOptions.DEFAULT, "/test8", 1)
         for (ch in """ "a":1 """)
             assembler.accept(ch)
         assertFailsWith<ParseException> { assembler.accept('"') }.let {
