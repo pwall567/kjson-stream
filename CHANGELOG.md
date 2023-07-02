@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `pom.xml`: updated dependency versions
 - `ArrayAssembler`, `ObjectAssembler`, `JSONCoPipeline`, `JSONCoStreamer`, `JSONPipeline`, `JSONStreamer`: added check
   for excessive nesting
+- `ArrayAssembler`, `ObjectAssembler`: switched to use Builder classes
 
 ## [1.3] - 2023-06-04
 ### Changed

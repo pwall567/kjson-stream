@@ -46,8 +46,8 @@ class ArrayAssembler(parseOptions: ParseOptions, pointer: String, depth: Int) : 
             throw ParseException(MAX_DEPTH_EXCEEDED)
     }
 
-    private val list = mutableListOf<JSONValue?>()
-    private val pipeline = JSONPipeline(AcceptorAdapter { list.add(it) }, parseOptions, pointer, depth)
+    private val builder = JSONArray.Builder()
+    private val pipeline = JSONPipeline(AcceptorAdapter { builder.add(it) }, parseOptions, pointer, depth)
 
     override val complete: Boolean
         get() = pipeline.isComplete
@@ -56,7 +56,7 @@ class ArrayAssembler(parseOptions: ParseOptions, pointer: String, depth: Int) : 
         get() = complete
 
     override val value: JSONArray
-        get() = if (complete) JSONArray.from(list) else throw ParseException(ARRAY_INCOMPLETE)
+        get() = if (complete) builder.build() else throw ParseException(ARRAY_INCOMPLETE)
 
     override fun accept(ch: Char): Boolean {
         pipeline.accept(ch.code)

@@ -27,7 +27,6 @@ package io.kjson.stream
 
 import io.kjson.JSON.asString
 import io.kjson.JSONObject
-import io.kjson.JSONValue
 import io.kjson.JSONStreamer.Companion.getAssembler
 import io.kjson.parser.ParseException
 import io.kjson.parser.ParseOptions
@@ -64,10 +63,9 @@ class ObjectAssembler(
 
     private var state: State = State.INITIAL
     private var child: Assembler = Assembler.NullAssembler
-    private val entries = mutableListOf<Pair<String, JSONValue?>>()
+    private val builder = JSONObject.Builder()
     private var name = ""
     private var ignore = false
-    private var checkPrevious = -1
     private val unquotedId = StringBuilder()
 
     override val complete: Boolean
@@ -77,7 +75,7 @@ class ObjectAssembler(
         get() = complete
 
     override val value: JSONObject
-        get() = if (complete) JSONObject.from(entries) else throw ParseException(OBJECT_INCOMPLETE, pointer)
+        get() = if (complete) builder.build() else throw ParseException(OBJECT_INCOMPLETE, pointer)
 
     override fun accept(ch: Char): Boolean {
         var consumed: Boolean
@@ -131,7 +129,6 @@ class ObjectAssembler(
                 }
                 State.KEYWORD -> {
                     ignore = false
-                    checkPrevious = -1
                     child.accept(ch)
                     if (child.complete) {
                         name = child.value.asString
@@ -149,7 +146,7 @@ class ObjectAssembler(
                 }
                 State.ENTRY -> {
                     if (!isSpaceCharacter(ch)) {
-                        child = getAssembler(ch, parseOptions, "$pointer/${entries.size}", depth)
+                        child = getAssembler(ch, parseOptions, "$pointer/${builder.size}", depth)
                         state = State.CHILD
                     }
                 }
@@ -158,12 +155,12 @@ class ObjectAssembler(
                     if (child.complete) {
                         val value = child.value
                         if (!ignore) {
-                            if (checkPrevious >= 0) {
-                                if (entries[checkPrevious].second != value)
+                            if (builder.containsKey(name)) {
+                                if (builder.get(name) != value)
                                     throw ParseException("$DUPLICATE_KEY \"$name\"", pointer)
                             }
                             else
-                                entries.add(name to value)
+                                builder.add(name, value)
                         }
                         state = State.COMMA_EXPECTED
                     }
@@ -189,14 +186,12 @@ class ObjectAssembler(
     }
 
     private fun duplicateKeyCheck() {
-        checkPrevious = entries.indexOfFirst { it.first == name }
-        if (checkPrevious >= 0) {
+        if (builder.containsKey(name)) {
             when (parseOptions.objectKeyDuplicate) {
                 ParseOptions.DuplicateKeyOption.ERROR -> throw ParseException("$DUPLICATE_KEY \"$name\"", pointer)
                 ParseOptions.DuplicateKeyOption.TAKE_FIRST -> ignore = true
                 ParseOptions.DuplicateKeyOption.TAKE_LAST -> {
-                    entries.removeAt(checkPrevious)
-                    checkPrevious = -1
+                    builder.remove(name)
                 }
                 ParseOptions.DuplicateKeyOption.CHECK_IDENTICAL -> {}
             }
