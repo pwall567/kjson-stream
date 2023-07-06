@@ -170,9 +170,9 @@ The latest version of the library is 1.4, and it may be obtained from the Maven 
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-stream:1.4)
+    implementation("io.kjson:kjson-stream:1.4")
 ```
 
 Peter Wall
 
-2023-06-27
+2023-07-07

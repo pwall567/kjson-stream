@@ -2,7 +2,7 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [Unreleased]
+## [1.4] - 2023-07-05
 ### Added
 - `JSONLinesPipeline`, `JSONLinesCoPipeline`
 ### Changed
