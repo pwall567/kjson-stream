@@ -31,7 +31,6 @@ import io.kjson.JSONLong
 import io.kjson.JSONValue
 import io.kjson.parser.ParseException
 import io.kjson.parser.ParserConstants.MAX_INTEGER_DIGITS_LENGTH
-import io.kjson.parser.ParserConstants.MAX_LONG_DIGITS_LENGTH
 import io.kjson.parser.ParserErrors.ILLEGAL_LEADING_ZERO
 import io.kjson.parser.ParserErrors.ILLEGAL_NUMBER
 import io.kjson.parser.ParserErrors.NUMBER_INCOMPLETE
@@ -64,16 +63,13 @@ class NumberAssembler(firstChar: Char, private val pointer: String) : Assembler 
     override val value: JSONValue
         get() = when (state) {
             State.ZERO_SEEN -> JSONInt.ZERO
-            State.INTEGER, State.COMPLETE -> when {
-                number.length < MAX_INTEGER_DIGITS_LENGTH -> JSONInt(number.toString().toInt())
-                number.length < MAX_LONG_DIGITS_LENGTH -> {
-                    number.toString().toLong().let {
-                        if (it in Int.MIN_VALUE..Int.MAX_VALUE) JSONInt(it.toInt()) else JSONLong(it)
-                    }
-                }
-                else -> {
+            State.INTEGER, State.COMPLETE -> {
+                if (number.length < MAX_INTEGER_DIGITS_LENGTH)
+                    JSONInt(convertInt())
+                else {
                     try {
-                        JSONLong(number.toString().toLong())
+                        val long = convertLong()
+                        if (long in Int.MIN_VALUE..Int.MAX_VALUE) JSONInt(long.toInt()) else JSONLong(long)
                     }
                     catch (_: NumberFormatException) { // integer too big for Long becomes JSONDecimal
                         JSONDecimal(number.toString())
@@ -83,6 +79,74 @@ class NumberAssembler(firstChar: Char, private val pointer: String) : Assembler 
             State.FRACTION, State.EXPONENT, State.COMPLETE_FRACTION -> JSONDecimal(number.toString())
             else -> throw ParseException(NUMBER_INCOMPLETE, pointer)
         }
+
+    /**
+     * Convert the digits accumulated into the [StringBuilder] `number` into an [Int].  This does not need to perform
+     * validity checks on the data because only valid digits (and a possible leading '`-`') will have been added.
+     */
+    private fun convertInt(): Int {
+        var result: Int
+        if (number[0] == '-') {
+            // negative
+            if (number[1] == '0')
+                return 0
+            result = -number[1].convertDigit()
+            var index = 2
+            while (index < number.length) {
+                result = result * 10 - number[index++].convertDigit()
+                if (result >= 0)
+                    throw NumberFormatException("Overflow")
+            }
+        }
+        else {
+            // positive
+            if (number[0] == '0')
+                return 0
+            result = number[0].convertDigit()
+            var index = 1
+            while (index < number.length) {
+                result = result * 10 + number[index++].convertDigit()
+                if (result < 0)
+                    throw NumberFormatException("Overflow")
+            }
+        }
+        return result
+    }
+
+    /**
+     * Convert the digits accumulated into the [StringBuilder] `number` into a [Long].  This does not need to perform
+     * validity checks on the data because only valid digits (and a possible leading '`-`') will have been added.
+     */
+    private fun convertLong(): Long {
+        var result: Long
+        if (number[0] == '-') {
+            // negative
+            if (number[1] == '0')
+                return 0L
+            result = -number[1].convertDigit().toLong()
+            var index = 2
+            while (index < number.length) {
+                result = result * 10 - number[index++].convertDigit()
+                if (result >= 0)
+                    throw NumberFormatException("Overflow")
+            }
+        }
+        else {
+            // positive
+            if (number[0] == '0')
+                return 0L
+            result = number[0].convertDigit().toLong()
+            var index = 1
+            while (index < number.length) {
+                result = result * 10 + number[index++].convertDigit()
+                if (result < 0)
+                    throw NumberFormatException("Overflow")
+            }
+        }
+        return result
+    }
+
+    private fun Char.convertDigit(): Int = this.code - '0'.code
 
     override fun accept(ch: Char): Boolean {
         when (state) {

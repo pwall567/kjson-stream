@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [Unreleased]
+### Changed
+- `NumberAssembler`: optimised decimal conversion
+
 ## [1.6] - 2023-09-25
 ### Changed
 - `pom.xml`: updated dependency version
