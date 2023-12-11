@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kjson-stream</artifactId>
-  <version>1.6</version>
+  <version>1.7</version>
   <name>JSON Kotlin streaming library</name>
   <description>JSON Kotlin streaming library</description>
   <packaging>jar</packaging>
@@ -63,22 +63,22 @@
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>5.10</version>
+      <version>5.11</version>
     </dependency>
     <dependency>
       <groupId>net.pwall.util</groupId>
       <artifactId>pipelines</artifactId>
-      <version>5.0</version>
+      <version>5.2</version>
     </dependency>
     <dependency>
       <groupId>net.pwall.util</groupId>
       <artifactId>co-pipelines</artifactId>
-      <version>2.2</version>
+      <version>2.4</version>
     </dependency>
     <dependency>
       <groupId>net.pwall.json</groupId>
       <artifactId>json-functions</artifactId>
-      <version>1.7.2</version>
+      <version>1.9</version>
     </dependency>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>

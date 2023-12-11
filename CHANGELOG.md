@@ -2,9 +2,11 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [Unreleased]
+## [1.7] - 2023-12-11
 ### Changed
 - `NumberAssembler`: optimised decimal conversion
+- `JSONStreamer`: optimised reading from `Reader`
+- `pom.xml`: updated dependency versions
 
 ## [1.6] - 2023-09-25
 ### Changed
