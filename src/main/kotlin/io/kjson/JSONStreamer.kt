@@ -90,6 +90,8 @@ class JSONStreamer(private val parseOptions: ParseOptions = ParseOptions.DEFAULT
 
     companion object {
 
+        const val BUFFER_SIZE = 2048
+
         internal fun getAssembler(
             ch: Char,
             parseOptions: ParseOptions,
@@ -108,7 +110,13 @@ class JSONStreamer(private val parseOptions: ParseOptions = ParseOptions.DEFAULT
 
         fun parse(reader: Reader, parseOptions: ParseOptions = ParseOptions.DEFAULT): JSONValue? =
             JSONStreamer(parseOptions).also {
-                it.accept(reader)
+                val buffer = CharArray(BUFFER_SIZE)
+                while (true) {
+                    val count = reader.read(buffer)
+                    if (count < 0)
+                        break
+                    it.accept(buffer, 0, count)
+                }
             }.result
 
     }
