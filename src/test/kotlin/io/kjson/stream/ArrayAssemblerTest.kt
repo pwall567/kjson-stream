@@ -137,7 +137,7 @@ class ArrayAssemblerTest {
     @Test fun `should fail on invalid array content`() {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         assertFailsWith<ParseException> { assembler.accept('a') }.let {
-            expect("Illegal JSON syntax at /0") { it.message }
+            expect("Illegal JSON syntax, at /0") { it.message }
         }
     }
 
@@ -146,7 +146,7 @@ class ArrayAssemblerTest {
         assembler.accept('0')
         assembler.accept(',')
         assertFailsWith<ParseException> { assembler.accept('a') }.let {
-            expect("Illegal JSON syntax at /1") { it.message }
+            expect("Illegal JSON syntax, at /1") { it.message }
         }
     }
 
@@ -154,7 +154,7 @@ class ArrayAssemblerTest {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         assembler.accept('[')
         assertFailsWith<ParseException> { assembler.accept('a') }.let {
-            expect("Illegal JSON syntax at /0/0") { it.message }
+            expect("Illegal JSON syntax, at /0/0") { it.message }
         }
     }
 
@@ -194,7 +194,7 @@ class ArrayAssemblerTest {
         assembler.accept('0')
         assembler.accept(' ')
         assertFailsWith<ParseException> { assembler.accept('0') }.let {
-            expect("Missing comma in JSON array at /test9") { it.message }
+            expect("Missing comma in JSON array, at /test9") { it.message }
         }
     }
 

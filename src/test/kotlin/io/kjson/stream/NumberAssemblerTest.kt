@@ -205,7 +205,7 @@ class NumberAssemblerTest {
     @Test fun `should fail on leading zeros`() {
         val assembler = NumberAssembler('0', "/test1")
         assertFailsWith<ParseException> { assembler.accept('1') }.let {
-            expect("$ILLEGAL_LEADING_ZERO at /test1") { it.message }
+            expect("$ILLEGAL_LEADING_ZERO, at /test1") { it.message }
         }
     }
 

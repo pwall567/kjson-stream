@@ -139,7 +139,7 @@ class ObjectAssemblerTest {
         for (ch in """ "a":1 """)
             assembler.accept(ch)
         assertFailsWith<ParseException> { assembler.accept('"') }.let {
-            expect("Missing comma in JSON object at /test8") { it.message }
+            expect("Missing comma in JSON object, at /test8") { it.message }
         }
     }
 
