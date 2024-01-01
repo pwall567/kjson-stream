@@ -154,23 +154,23 @@ case takes a `suspend` lambda:
 
 ## Dependency Specification
 
-The latest version of the library is 1.8, and it may be obtained from the Maven Central repository.
+The latest version of the library is 1.9, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-stream</artifactId>
-      <version>1.8</version>
+      <version>1.9</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-stream:1.8"
+    implementation "io.kjson:kjson-stream:1.9"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-stream:1.8")
+    implementation("io.kjson:kjson-stream:1.9")
 ```
 
 Peter Wall
