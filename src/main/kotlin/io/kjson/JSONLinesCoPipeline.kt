@@ -42,7 +42,6 @@ import net.pwall.pipeline.CoAcceptor
  * values to a non-blocking downstream receiver as they are completed.
  *
  * @author  Peter Wall
- * @param   <R>     the pipeline result type
  */
 class JSONLinesCoPipeline<R>(
     downstream: CoAcceptor<JSONValue?, R>,

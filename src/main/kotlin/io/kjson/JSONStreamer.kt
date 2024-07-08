@@ -51,6 +51,7 @@ import net.pwall.pipeline.AbstractIntAcceptor
 class JSONStreamer(private val parseOptions: ParseOptions = ParseOptions.DEFAULT) : AbstractIntAcceptor<JSONValue?>() {
 
     enum class State { BOM_POSSIBLE, INITIAL, CHILD, COMPLETE }
+    // TODO try using Int for state (some Kotlin libraries do this) - run timing tests
 
     private var state: State = State.BOM_POSSIBLE
     private var child: Assembler = Assembler.NullAssembler

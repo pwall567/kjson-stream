@@ -45,9 +45,8 @@ import net.pwall.pipeline.CoAcceptor
  * emits JSON values to a non-blocking downstream receiver as they are completed.
  *
  * @author  Peter Wall
- * @param   <R>     the pipeline result type
  */
-class JSONCoPipeline<R> internal constructor(
+class JSONCoPipeline<out R> internal constructor(
     downstream: CoAcceptor<JSONValue?, R>,
     private val parseOptions: ParseOptions,
     private val pointer: String,

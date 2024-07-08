@@ -43,7 +43,6 @@ import net.pwall.pipeline.Acceptor
  * they are completed.
  *
  * @author  Peter Wall
- * @param   <R>     the pipeline result type
  */
 class JSONLinesPipeline<R>(
     downstream: Acceptor<JSONValue?, R>,
