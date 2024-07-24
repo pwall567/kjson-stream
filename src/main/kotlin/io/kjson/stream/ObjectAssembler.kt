@@ -2,7 +2,7 @@
  * @(#) ObjectAssembler.kt
  *
  * kjson-stream  JSON Kotlin streaming library
- * Copyright (c) 2023 Peter Wall
+ * Copyright (c) 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,6 @@ import io.kjson.parser.ParseException
 import io.kjson.parser.ParseOptions
 import io.kjson.parser.ParserConstants.identifierContinuationSet
 import io.kjson.parser.ParserConstants.identifierStartSet
-import io.kjson.parser.ParserErrors.DUPLICATE_KEY
 import io.kjson.parser.ParserErrors.ILLEGAL_KEY
 import io.kjson.parser.ParserErrors.ILLEGAL_SYNTAX
 import io.kjson.parser.ParserErrors.MAX_DEPTH_EXCEEDED
@@ -63,7 +62,10 @@ class ObjectAssembler(
 
     private var state: State = State.INITIAL
     private var child: Assembler = Assembler.NullAssembler
-    private val builder = JSONObject.Builder()
+    private val builder = JSONObject.Builder(
+        duplicateKeyOption = parseOptions.objectKeyDuplicate,
+        errorKey = pointer,
+    )
     private var name = ""
     private var ignore = false
     private val unquotedId = StringBuilder()
@@ -123,7 +125,6 @@ class ObjectAssembler(
                         consumed = false
                         name = unquotedId.toString()
                         unquotedId.setLength(0)
-                        duplicateKeyCheck()
                         state = State.COLON_EXPECTED
                     }
                 }
@@ -132,7 +133,6 @@ class ObjectAssembler(
                     child.accept(ch)
                     if (child.complete) {
                         name = child.value.asString
-                        duplicateKeyCheck()
                         state = State.COLON_EXPECTED
                     }
                 }
@@ -154,14 +154,8 @@ class ObjectAssembler(
                     consumed = child.accept(ch)
                     if (child.complete) {
                         val value = child.value
-                        if (!ignore) {
-                            if (builder.containsKey(name)) {
-                                if (builder.get(name) != value)
-                                    throw ParseException("$DUPLICATE_KEY \"$name\"", pointer)
-                            }
-                            else
-                                builder.add(name, value)
-                        }
+                        if (!ignore)
+                            builder.add(name, value)
                         state = State.COMMA_EXPECTED
                     }
                 }
@@ -183,19 +177,6 @@ class ObjectAssembler(
                 break
         }
         return true
-    }
-
-    private fun duplicateKeyCheck() {
-        if (builder.containsKey(name)) {
-            when (parseOptions.objectKeyDuplicate) {
-                ParseOptions.DuplicateKeyOption.ERROR -> throw ParseException("$DUPLICATE_KEY \"$name\"", pointer)
-                ParseOptions.DuplicateKeyOption.TAKE_FIRST -> ignore = true
-                ParseOptions.DuplicateKeyOption.TAKE_LAST -> {
-                    builder.remove(name)
-                }
-                ParseOptions.DuplicateKeyOption.CHECK_IDENTICAL -> {}
-            }
-        }
     }
 
 }
