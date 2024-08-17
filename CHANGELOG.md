@@ -2,6 +2,10 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [3.1] - 2024-08-17
+### Changed
+- `pom.xml`: updated dependency version
+
 ## [3.0] - 2024-07-22
 ### Changed
 - `ObjectAssembler`: converted to use duplicate key check in `JSONObject` (breaking change)
