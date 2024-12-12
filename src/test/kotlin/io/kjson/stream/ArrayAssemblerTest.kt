@@ -2,7 +2,7 @@
  * @(#) ArrayAssemblerTest.kt
  *
  * kjson-stream  JSON Kotlin streaming library
- * Copyright (c) 2023 Peter Wall
+ * Copyright (c) 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,11 @@
 package io.kjson.stream
 
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.test.expect
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeNonNull
+import io.kstuff.test.shouldBeType
+import io.kstuff.test.shouldThrow
 
 import io.kjson.JSONArray
 import io.kjson.JSONBoolean
@@ -48,68 +47,68 @@ class ArrayAssemblerTest {
 
     @Test fun `should create empty array`() {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, rootPointer, 0)
-        assertFalse(assembler.complete)
-        assertFalse(assembler.valid)
+        assembler.complete shouldBe false
+        assembler.valid shouldBe false
         assembler.accept(']')
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
         with(assembler.value) {
-            assertTrue(isEmpty())
+            isEmpty() shouldBe true
         }
     }
 
     @Test fun `should create array with a single entry`() {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         for (ch in "0]") {
-            assertFalse(assembler.complete)
-            assertFalse(assembler.valid)
+            assembler.complete shouldBe false
+            assembler.valid shouldBe false
             assembler.accept(ch)
         }
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
         with(assembler.value) {
-            expect(1) { size }
-            expect(JSONInt(0)) { this[0] }
+            size shouldBe 1
+            this[0] shouldBe JSONInt(0)
         }
     }
 
     @Test fun `should create array with two entries`() {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         for (ch in "0,1]") {
-            assertFalse(assembler.complete)
-            assertFalse(assembler.valid)
+            assembler.complete shouldBe false
+            assembler.valid shouldBe false
             assembler.accept(ch)
         }
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
         with(assembler.value) {
-            expect(2) { size }
-            expect(JSONInt(0)) { this[0] }
-            expect(JSONInt(1)) { this[1] }
+            size shouldBe 2
+            this[0] shouldBe JSONInt(0)
+            this[1] shouldBe JSONInt(1)
         }
     }
 
     @Test fun `should create array with complex mix of entries`() {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         for (ch in "\"zebra\",true,1,[],null,2.5]") {
-            assertFalse(assembler.complete)
-            assertFalse(assembler.valid)
+            assembler.complete shouldBe false
+            assembler.valid shouldBe false
             assembler.accept(ch)
         }
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
         with(assembler.value) {
-            expect(6) { size }
-            expect(JSONString("zebra")) { this[0] }
-            expect(JSONBoolean.TRUE) { this[1] }
-            expect(JSONInt(1)) { this[2] }
+            size shouldBe 6
+            this[0] shouldBe JSONString("zebra")
+            this[1] shouldBe JSONBoolean.TRUE
+            this[2] shouldBe JSONInt(1)
             with(this[3]) {
-                assertNotNull(this)
-                assertTrue(this is JSONArray)
-                assertTrue(isEmpty())
+                shouldBeNonNull()
+                shouldBeType<JSONArray>()
+                isEmpty() shouldBe true
             }
-            assertNull(this[4])
-            expect(JSONDecimal("2.5")) { this[5] }
+            this[4] shouldBe null
+            this[5] shouldBe JSONDecimal("2.5")
         }
     }
 
@@ -117,27 +116,27 @@ class ArrayAssemblerTest {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         for (ch in " \"zebra\"   , true  , 1 , [ ]    , null ,  2.5] ")
             assembler.accept(ch)
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
         with(assembler.value) {
-            expect(6) { size }
-            expect(JSONString("zebra")) { this[0] }
-            expect(JSONBoolean.TRUE) { this[1] }
-            expect(JSONInt(1)) { this[2] }
+            size shouldBe 6
+            this[0] shouldBe JSONString("zebra")
+            this[1] shouldBe JSONBoolean.TRUE
+            this[2] shouldBe JSONInt(1)
             with(this[3]) {
-                assertNotNull(this)
-                assertTrue(this is JSONArray)
-                assertTrue(isEmpty())
+                shouldBeNonNull()
+                shouldBeType<JSONArray>()
+                isEmpty() shouldBe true
             }
-            assertNull(this[4])
-            expect(JSONDecimal("2.5")) { this[5] }
+            this[4] shouldBe null
+            this[5] shouldBe JSONDecimal("2.5")
         }
     }
 
     @Test fun `should fail on invalid array content`() {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, rootPointer, 0)
-        assertFailsWith<ParseException> { assembler.accept('a') }.let {
-            expect("Illegal JSON syntax, at /0") { it.message }
+        shouldThrow<ParseException>("Illegal JSON syntax, at /0") {
+            assembler.accept('a')
         }
     }
 
@@ -145,24 +144,24 @@ class ArrayAssemblerTest {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         assembler.accept('0')
         assembler.accept(',')
-        assertFailsWith<ParseException> { assembler.accept('a') }.let {
-            expect("Illegal JSON syntax, at /1") { it.message }
+        shouldThrow<ParseException>("Illegal JSON syntax, at /1") {
+            assembler.accept('a')
         }
     }
 
     @Test fun `should fail on invalid content in nested array`() {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         assembler.accept('[')
-        assertFailsWith<ParseException> { assembler.accept('a') }.let {
-            expect("Illegal JSON syntax, at /0/0") { it.message }
+        shouldThrow<ParseException>("Illegal JSON syntax, at /0/0") {
+            assembler.accept('a')
         }
     }
 
     @Test fun `should fail on missing closing bracket`() {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         assembler.accept('0')
-        assertFailsWith<ParseException> { assembler.value }.let {
-            expect("JSON array is incomplete") { it.message }
+        shouldThrow<ParseException>("JSON array is incomplete") {
+            assembler.value
         }
     }
 
@@ -170,8 +169,8 @@ class ArrayAssemblerTest {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         assembler.accept('0')
         assembler.accept(',')
-        assertFailsWith<ParseException> { assembler.accept(']') }.let {
-            expect("Trailing comma in JSON array") { it.message }
+        shouldThrow<ParseException>("Trailing comma in JSON array") {
+            assembler.accept(']')
         }
     }
 
@@ -181,11 +180,11 @@ class ArrayAssemblerTest {
         assembler.accept('0')
         assembler.accept(',')
         assembler.accept(']')
-        assertTrue(assembler.valid)
-        assertTrue(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe true
         with(assembler.value) {
-            expect(1) { size }
-            expect(JSONInt(0)) { this[0] }
+            size shouldBe 1
+            this[0] shouldBe JSONInt(0)
         }
     }
 
@@ -193,8 +192,8 @@ class ArrayAssemblerTest {
         val assembler = ArrayAssembler(ParseOptions.DEFAULT, "/test9", 1)
         assembler.accept('0')
         assembler.accept(' ')
-        assertFailsWith<ParseException> { assembler.accept('0') }.let {
-            expect("Missing comma in JSON array, at /test9") { it.message }
+        shouldThrow<ParseException>("Missing comma in JSON array, at /test9") {
+            assembler.accept('0')
         }
     }
 
@@ -204,24 +203,25 @@ class ArrayAssemblerTest {
         repeat(49) { assembler.accept('[') }
         assembler.accept('1')
         repeat(50) { assembler.accept(']') }
-        assertTrue(assembler.valid)
-        assertTrue(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe true
         var result: JSONValue? = assembler.value
         for (i in 0 until parseOptions.maximumNestingDepth) {
-            assertTrue(result is JSONArray)
+            result.shouldBeType<JSONArray>()
             result = result[0]
         }
-        expect(JSONInt(1)) { result }
+        result shouldBe JSONInt(1)
     }
 
     @Test fun `should throw exception on nesting depth exceeded`() {
         val parseOptions = ParseOptions(maximumNestingDepth = 50)
         val assembler = ArrayAssembler(parseOptions, rootPointer, 0)
         repeat(49) { assembler.accept('[') }
-        assertFailsWith<ParseException> { assembler.accept('[') }.let {
-            expect(MAX_DEPTH_EXCEEDED) { it.text }
-            expect(MAX_DEPTH_EXCEEDED) { it.message }
-            expect(rootPointer) { it.pointer }
+        shouldThrow<ParseException>(MAX_DEPTH_EXCEEDED) {
+            assembler.accept('[')
+        }.let {
+            it.text shouldBe MAX_DEPTH_EXCEEDED
+            it.pointer shouldBe rootPointer
         }
     }
 
@@ -229,7 +229,12 @@ class ArrayAssemblerTest {
         val parseOptions = ParseOptions(maximumNestingDepth = 2)
         val assembler = ArrayAssembler(parseOptions, rootPointer, 0)
         assembler.accept('[')
-        assertFailsWith<ParseException> { assembler.accept('[') }
+        shouldThrow<ParseException>(MAX_DEPTH_EXCEEDED) {
+            assembler.accept('[')
+        }.let {
+            it.text shouldBe MAX_DEPTH_EXCEEDED
+            it.pointer shouldBe rootPointer
+        }
     }
 
 }

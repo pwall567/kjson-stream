@@ -2,7 +2,7 @@
  * @(#) NumberAssemblerTest.kt
  *
  * kjson-stream  JSON Kotlin streaming library
- * Copyright (c) 2023 Peter Wall
+ * Copyright (c) 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,11 @@
 package io.kjson.stream
 
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
-import kotlin.test.expect
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeSameInstance
+import io.kstuff.test.shouldBeType
+import io.kstuff.test.shouldThrow
 
 import io.kjson.JSONDecimal
 import io.kjson.JSONInt
@@ -44,77 +43,77 @@ class NumberAssemblerTest {
 
     @Test fun `should parse simple number`() {
         val assembler = NumberAssembler('1', rootPointer)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         assembler.accept('2')
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         assembler.accept('3')
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         assembler.value.let {
-            assertIs<JSONInt>(it)
-            expect(JSONInt(123)) { it }
+            it.shouldBeType<JSONInt>()
+            it shouldBe JSONInt(123)
         }
     }
 
     @Test fun `should parse zero`() {
         val assembler = NumberAssembler('0', rootPointer)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
-        assertSame(JSONInt.ZERO, assembler.value)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
+        assembler.value shouldBeSameInstance JSONInt.ZERO
     }
 
     @Test fun `should parse negative number`() {
         val assembler = NumberAssembler('-', rootPointer)
-        assertFalse(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe false
+        assembler.complete shouldBe false
         for (ch in "123") {
             assembler.accept(ch)
-            assertTrue(assembler.valid)
-            assertFalse(assembler.complete)
+            assembler.valid shouldBe true
+            assembler.complete shouldBe false
         }
         assembler.value.let {
-            assertIs<JSONInt>(it)
-            expect(JSONInt(-123)) { it }
+            it.shouldBeType<JSONInt>()
+            it shouldBe JSONInt(-123)
         }
     }
 
     @Test fun `should parse long number`() {
         val assembler = NumberAssembler('1', rootPointer)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         for (ch in "23456789123456789") {
             assembler.accept(ch)
-            assertTrue(assembler.valid)
-            assertFalse(assembler.complete)
+            assembler.valid shouldBe true
+            assembler.complete shouldBe false
         }
         assembler.value.let {
-            assertIs<JSONLong>(it)
-            expect(JSONLong(123456789123456789)) { it }
+            it.shouldBeType<JSONLong>()
+            it shouldBe JSONLong(123456789123456789)
         }
     }
 
     @Test fun `should parse floating point number`() {
         val assembler = NumberAssembler('1', rootPointer)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         for (ch in "23.50")
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
-        expect(JSONDecimal("123.50")) { assembler.value }
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
+        assembler.value shouldBe JSONDecimal("123.50")
     }
 
     @Test fun `should parse maximum int value`() {
         val assembler = NumberAssembler('2', rootPointer)
         for (ch in "147483647")
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         assembler.value.let {
-            assertIs<JSONInt>(it)
-            expect(JSONInt(Int.MAX_VALUE)) { it }
+            it.shouldBeType<JSONInt>()
+            it shouldBe JSONInt(Int.MAX_VALUE)
         }
     }
 
@@ -122,11 +121,11 @@ class NumberAssemblerTest {
         val assembler = NumberAssembler('2', rootPointer)
         for (ch in "147483648")
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         assembler.value.let {
-            assertIs<JSONLong>(it)
-            expect(JSONLong(2147483648)) { it }
+            it.shouldBeType<JSONLong>()
+            it shouldBe JSONLong(2147483648)
         }
     }
 
@@ -134,11 +133,11 @@ class NumberAssemblerTest {
         val assembler = NumberAssembler('-', rootPointer)
         for (ch in "2147483648")
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         assembler.value.let {
-            assertIs<JSONInt>(it)
-            expect(JSONInt(Int.MIN_VALUE)) { it }
+            it.shouldBeType<JSONInt>()
+            it shouldBe JSONInt(Int.MIN_VALUE)
         }
     }
 
@@ -146,11 +145,11 @@ class NumberAssemblerTest {
         val assembler = NumberAssembler('-', rootPointer)
         for (ch in "2147483649")
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         assembler.value.let {
-            assertIs<JSONLong>(it)
-            expect(JSONLong(-2147483649)) { it }
+            it.shouldBeType<JSONLong>()
+            it shouldBe JSONLong(-2147483649)
         }
     }
 
@@ -158,11 +157,11 @@ class NumberAssemblerTest {
         val assembler = NumberAssembler('9', rootPointer)
         for (ch in "223372036854775807")
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         assembler.value.let {
-            assertIs<JSONLong>(it)
-            expect(JSONLong(Long.MAX_VALUE)) { it }
+            it.shouldBeType<JSONLong>()
+            it shouldBe JSONLong(Long.MAX_VALUE)
         }
     }
 
@@ -170,11 +169,11 @@ class NumberAssemblerTest {
         val assembler = NumberAssembler('9', rootPointer)
         for (ch in "223372036854775808")
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         assembler.value.let {
-            assertIs<JSONDecimal>(it)
-            expect(JSONDecimal("9223372036854775808")) { assembler.value }
+            it.shouldBeType<JSONDecimal>()
+            assembler.value shouldBe JSONDecimal("9223372036854775808")
         }
     }
 
@@ -182,11 +181,11 @@ class NumberAssemblerTest {
         val assembler = NumberAssembler('-', rootPointer)
         for (ch in "9223372036854775808")
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         assembler.value.let {
-            assertIs<JSONLong>(it)
-            expect(JSONLong(Long.MIN_VALUE)) { it }
+            it.shouldBeType<JSONLong>()
+            it shouldBe JSONLong(Long.MIN_VALUE)
         }
     }
 
@@ -194,18 +193,18 @@ class NumberAssemblerTest {
         val assembler = NumberAssembler('-', rootPointer)
         for (ch in "9223372036854775809")
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertFalse(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe false
         assembler.value.let {
-            assertIs<JSONDecimal>(it)
-            expect(JSONDecimal("-9223372036854775809")) { assembler.value }
+            it.shouldBeType<JSONDecimal>()
+            assembler.value shouldBe JSONDecimal("-9223372036854775809")
         }
     }
 
     @Test fun `should fail on leading zeros`() {
         val assembler = NumberAssembler('0', "/test1")
-        assertFailsWith<ParseException> { assembler.accept('1') }.let {
-            expect("$ILLEGAL_LEADING_ZERO, at /test1") { it.message }
+        shouldThrow<ParseException>("$ILLEGAL_LEADING_ZERO, at /test1") {
+            assembler.accept('1')
         }
     }
 

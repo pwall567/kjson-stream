@@ -2,7 +2,7 @@
  * @(#) JSONLinesCoPipelineTest.kt
  *
  * kjson-stream  JSON Kotlin streaming library
- * Copyright (c) 2023 Peter Wall
+ * Copyright (c) 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,10 @@
 package io.kjson
 
 import kotlin.test.Test
-import kotlin.test.assertTrue
-import kotlin.test.expect
 import kotlinx.coroutines.runBlocking
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeType
 
 import io.kjson.JSON.asInt
 import net.pwall.pipeline.ListCoAcceptor
@@ -41,18 +42,18 @@ class JSONLinesCoPipelineTest {
         val pipeline = JSONLinesCoPipeline.pipeTo { result.add(it) }
         pipeline.accept("{\"a\":111,\"b\":222}\n")
         pipeline.accept("{\"a\":99,\"b\":88}\n")
-        assertTrue(pipeline.complete)
+        pipeline.complete shouldBe true
         with(result) {
-            expect(2) { size }
+            size shouldBe 2
             with(this[0]) {
-                assertTrue(this is JSONObject)
-                expect(111) { this["a"].asInt }
-                expect(222) { this["b"].asInt }
+                shouldBeType<JSONObject>()
+                this["a"].asInt shouldBe 111
+                this["b"].asInt shouldBe 222
             }
             with(this[1]) {
-                assertTrue(this is JSONObject)
-                expect(99) { this["a"].asInt }
-                expect(88) { this["b"].asInt }
+                shouldBeType<JSONObject>()
+                this["a"].asInt shouldBe 99
+                this["b"].asInt shouldBe 88
             }
         }
     }
@@ -62,16 +63,16 @@ class JSONLinesCoPipelineTest {
         pipeline.accept("{\"aa\":1001,\"bb\":2001}\n")
         pipeline.accept("{\"aa\":1002,\"bb\":2002}\n")
         with(pipeline.result) {
-            expect(2) { size }
+            size shouldBe 2
             with(this[0]) {
-                assertTrue(this is JSONObject)
-                expect(1001) { this["aa"].asInt }
-                expect(2001) { this["bb"].asInt }
+                shouldBeType<JSONObject>()
+                this["aa"].asInt shouldBe 1001
+                this["bb"].asInt shouldBe 2001
             }
             with(this[1]) {
-                assertTrue(this is JSONObject)
-                expect(1002) { this["aa"].asInt }
-                expect(2002) { this["bb"].asInt }
+                shouldBeType<JSONObject>()
+                this["aa"].asInt shouldBe 1002
+                this["bb"].asInt shouldBe 2002
             }
         }
     }
@@ -81,11 +82,11 @@ class JSONLinesCoPipelineTest {
         pipeline.accept(0xFEFF)
         pipeline.accept("{\"aaa\":999,\"bbb\":777}\n")
         with(pipeline.result) {
-            expect(1) { size }
+            size shouldBe 1
             with(this[0]) {
-                assertTrue(this is JSONObject)
-                expect(999) { this["aaa"].asInt }
-                expect(777) { this["bbb"].asInt }
+                shouldBeType<JSONObject>()
+                this["aaa"].asInt shouldBe 999
+                this["bbb"].asInt shouldBe 777
             }
         }
     }
@@ -93,9 +94,9 @@ class JSONLinesCoPipelineTest {
     @Test fun `should accept empty data stream`() = runBlocking {
         val result = mutableListOf<JSONValue?>()
         val pipeline = JSONLinesCoPipeline.pipeTo { result.add(it) }
-        assertTrue(pipeline.complete)
+        pipeline.complete shouldBe true
         with(result) {
-            expect(0) { size }
+            size shouldBe 0
         }
     }
 

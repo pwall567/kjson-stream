@@ -26,11 +26,10 @@
 package io.kjson.stream
 
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.test.expect
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeType
+import io.kstuff.test.shouldThrow
 
 import io.kjson.JSONArray
 import io.kjson.JSONBoolean
@@ -47,69 +46,69 @@ class ObjectAssemblerTest {
 
     @Test fun `should create empty object`() {
         val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer, 0)
-        assertFalse(assembler.complete)
-        assertFalse(assembler.valid)
+        assembler.complete shouldBe false
+        assembler.valid shouldBe false
         assembler.accept('}')
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
         with(assembler.value) {
-            assertTrue(isEmpty())
+            isEmpty() shouldBe true
         }
     }
 
     @Test fun `should create object with a single entry`() {
         val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         for (ch in "\"first\":0}") {
-            assertFalse(assembler.complete)
-            assertFalse(assembler.valid)
+            assembler.complete shouldBe false
+            assembler.valid shouldBe false
             assembler.accept(ch)
         }
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
         with(assembler.value) {
-            expect(1) { size }
-            expect(JSONInt(0)) { this["first"] }
+            size shouldBe 1
+            this["first"] shouldBe JSONInt(0)
         }
     }
 
     @Test fun `should create object with two entries`() {
         val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         for (ch in """"first":1,"second":2}""") {
-            assertFalse(assembler.complete)
-            assertFalse(assembler.valid)
+            assembler.complete shouldBe false
+            assembler.valid shouldBe false
             assembler.accept(ch)
         }
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
         with(assembler.value) {
-            expect(2) { size }
-            expect(JSONInt(1)) { this["first"] }
-            expect(JSONInt(2)) { this["second"] }
+            size shouldBe 2
+            this["first"] shouldBe JSONInt(1)
+            this["second"] shouldBe JSONInt(2)
         }
     }
 
     @Test fun `should create object with complex mix of entries`() {
         val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         for (ch in """"first":"tiger","second":false,"third":123,"fourth":[111,222],"fifth":null,"last":7.5}""") {
-            assertFalse(assembler.complete)
-            assertFalse(assembler.valid)
+            assembler.complete shouldBe false
+            assembler.valid shouldBe false
             assembler.accept(ch)
         }
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
         with(assembler.value) {
-            expect(6) { size }
-            expect(JSONString("tiger")) { this["first"] }
-            expect(JSONBoolean.FALSE) { this["second"] }
-            expect(JSONInt(123)) { this["third"] }
+            size shouldBe 6
+            this["first"] shouldBe JSONString("tiger")
+            this["second"] shouldBe JSONBoolean.FALSE
+            this["third"] shouldBe JSONInt(123)
             with(this["fourth"]) {
-                assertTrue(this is JSONArray)
-                expect(2) { size }
-                expect(JSONInt(111)) { this[0] }
-                expect(JSONInt(222)) { this[1] }
+                shouldBeType<JSONArray>()
+                size shouldBe 2
+                this[0] shouldBe JSONInt(111)
+                this[1] shouldBe JSONInt(222)
             }
-            assertNull(this["fifth"])
-            expect(JSONDecimal("7.5")) { this["last"] }
+            this["fifth"] shouldBe null
+            this["last"] shouldBe JSONDecimal("7.5")
         }
     }
 
@@ -117,8 +116,8 @@ class ObjectAssemblerTest {
         val assembler = ObjectAssembler(ParseOptions.DEFAULT, rootPointer, 0)
         for (ch in """ "a":111,"b":222, """)
             assembler.accept(ch)
-        assertFailsWith<ParseException> { assembler.accept('}') }.let {
-            expect("Trailing comma in JSON object") { it.message }
+        shouldThrow<ParseException>("Trailing comma in JSON object") {
+            assembler.accept('}')
         }
     }
 
@@ -127,12 +126,12 @@ class ObjectAssemblerTest {
         val assembler = ObjectAssembler(parseOptions, rootPointer, 0)
         for (ch in """ "a":111,"b":222,} """)
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertTrue(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe true
         with(assembler.value) {
-            expect(2) { size }
-            expect(JSONInt(111)) { this["a"] }
-            expect(JSONInt(222)) { this["b"] }
+            size shouldBe 2
+            this["a"] shouldBe JSONInt(111)
+            this["b"] shouldBe JSONInt(222)
         }
     }
 
@@ -140,8 +139,8 @@ class ObjectAssemblerTest {
         val assembler = ObjectAssembler(ParseOptions.DEFAULT, "/test8", 1)
         for (ch in """ "a":1 """)
             assembler.accept(ch)
-        assertFailsWith<ParseException> { assembler.accept('"') }.let {
-            expect("Missing comma in JSON object, at /test8") { it.message }
+        shouldThrow<ParseException>("Missing comma in JSON object, at /test8") {
+            assembler.accept('"')
         }
     }
 
@@ -150,8 +149,8 @@ class ObjectAssemblerTest {
         val assembler = ObjectAssembler(parseOptions, "/test9", 0)
         for (ch in "\"abc\":0,\"abc\":9")
             assembler.accept(ch)
-        assertFailsWith<JSONException> { assembler.accept('}') }.let {
-            expect("Duplicate key - abc, at /test9") { it.message }
+        shouldThrow<JSONException>("Duplicate key - abc, at /test9") {
+            assembler.accept('}')
         }
     }
 
@@ -160,11 +159,11 @@ class ObjectAssemblerTest {
         val assembler = ObjectAssembler(parseOptions, "/test9", 0)
         for (ch in """"abc":0,"abc":1}""")
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertTrue(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe true
         with(assembler.value) {
-            expect(1) { size }
-            expect(JSONInt(0)) { this["abc"] }
+            size shouldBe 1
+            this["abc"] shouldBe JSONInt(0)
         }
     }
 
@@ -173,11 +172,11 @@ class ObjectAssemblerTest {
         val assembler = ObjectAssembler(parseOptions, "/test9", 0)
         for (ch in """"abc":0,"abc":1}""")
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertTrue(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe true
         with(assembler.value) {
-            expect(1) { size }
-            expect(JSONInt(1)) { this["abc"] }
+            size shouldBe 1
+            this["abc"] shouldBe JSONInt(1)
         }
     }
 
@@ -186,11 +185,11 @@ class ObjectAssemblerTest {
         val assembler = ObjectAssembler(parseOptions, "/test9", 0)
         for (ch in """"abc":1,"abc":1}""")
             assembler.accept(ch)
-        assertTrue(assembler.valid)
-        assertTrue(assembler.complete)
+        assembler.valid shouldBe true
+        assembler.complete shouldBe true
         with(assembler.value) {
-            expect(1) { size }
-            expect(JSONInt(1)) { this["abc"] }
+            size shouldBe 1
+            this["abc"] shouldBe JSONInt(1)
         }
     }
 

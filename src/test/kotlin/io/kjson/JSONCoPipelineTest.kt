@@ -2,7 +2,7 @@
  * @(#) JSONCoPipelineTest.kt
  *
  * kjson-stream  JSON Kotlin streaming library
- * Copyright (c) 2023 Peter Wall
+ * Copyright (c) 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,9 @@
 package io.kjson
 
 import kotlin.test.Test
-import kotlin.test.expect
 import kotlinx.coroutines.runBlocking
+
+import io.kstuff.test.shouldBe
 
 import net.pwall.pipeline.ListCoAcceptor
 import net.pwall.pipeline.accept
@@ -39,14 +40,14 @@ class JSONCoPipelineTest {
         val pipeline = JSONCoPipeline.pipeTo { result.add(it) }
         pipeline.accept("[0,null,2]")
         val expected: List<JSONValue?> = listOf(JSONInt(0), null, JSONInt(2))
-        expect(expected) { result }
+        result shouldBe expected
     }
 
     @Test fun `should use secondary constructor`() = runBlocking {
         val pipeline = JSONCoPipeline(ListCoAcceptor())
         pipeline.accept("[0,999,2]")
         val expected: List<JSONValue?> = listOf(JSONInt(0), JSONInt(999), JSONInt(2))
-        expect(expected) { pipeline.result }
+        pipeline.result shouldBe expected
     }
 
     @Test fun `should use accept leading and training spaces in pipeline`() = runBlocking {
@@ -54,7 +55,7 @@ class JSONCoPipelineTest {
         val pipeline = JSONCoPipeline.pipeTo { result.add(it) }
         pipeline.accept("   [0,\"hello\",2]   ")
         val expected: List<JSONValue?> = listOf(JSONInt(0), JSONString("hello"), JSONInt(2))
-        expect(expected) { result }
+        result shouldBe expected
     }
 
     @Test fun `should allow BOM at start of array pipeline`() = runBlocking {
@@ -62,7 +63,7 @@ class JSONCoPipelineTest {
         val pipeline = JSONCoPipeline.pipeTo { result.add(it) }
         pipeline.accept("\uFEFF   [false,[]]   ")
         val expected: List<JSONValue?> = listOf(JSONBoolean.FALSE, JSONArray.EMPTY)
-        expect(expected) { result }
+        result shouldBe expected
     }
 
 }

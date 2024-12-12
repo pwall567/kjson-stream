@@ -2,7 +2,7 @@
  * @(#) StringAssemblerTest.kt
  *
  * kjson-stream  JSON Kotlin streaming library
- * Copyright (c) 2023 Peter Wall
+ * Copyright (c) 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,9 @@
 package io.kjson.stream
 
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
-import kotlin.test.expect
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldThrow
 
 import io.kjson.JSONString
 import io.kjson.parser.ParseException
@@ -39,51 +38,51 @@ class StringAssemblerTest {
 
     @Test fun `should build simple string`() {
         val assembler = StringAssembler(rootPointer)
-        assertFalse(assembler.complete)
-        assertFalse(assembler.valid)
+        assembler.complete shouldBe false
+        assembler.valid shouldBe false
         for (ch in "simple") {
             assembler.accept(ch)
-            assertFalse(assembler.complete)
-            assertFalse(assembler.valid)
+            assembler.complete shouldBe false
+            assembler.valid shouldBe false
         }
         assembler.accept('"')
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
-        expect(JSONString("simple")) { assembler.value }
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
+        assembler.value shouldBe JSONString("simple")
     }
 
     @Test fun `should accept backslash sequences`() {
         val assembler = StringAssembler(rootPointer)
         for (ch in "a\\nbc \\t \\\\ \\\" \\r x") {
             assembler.accept(ch)
-            assertFalse(assembler.complete)
-            assertFalse(assembler.valid)
+            assembler.complete shouldBe false
+            assembler.valid shouldBe false
         }
         assembler.accept('"')
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
-        expect(JSONString("a\nbc \t \\ \" \r x")) { assembler.value }
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
+        assembler.value shouldBe JSONString("a\nbc \t \\ \" \r x")
     }
 
     @Test fun `should accept unicode sequences`() {
         val assembler = StringAssembler(rootPointer)
         for (ch in "a\\u2014bc") {
             assembler.accept(ch)
-            assertFalse(assembler.complete)
-            assertFalse(assembler.valid)
+            assembler.complete shouldBe false
+            assembler.valid shouldBe false
         }
         assembler.accept('"')
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
-        expect(JSONString("a\u2014bc")) { assembler.value }
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
+        assembler.value shouldBe JSONString("a\u2014bc")
     }
 
     @Test fun `should fail on incorrect backslash sequence`() {
         val assembler = StringAssembler(rootPointer)
         assembler.accept('a')
         assembler.accept('\\')
-        assertFailsWith<ParseException> { assembler.accept('x') }.let {
-            expect("Illegal escape sequence in JSON string") { it.message }
+        shouldThrow<ParseException>("Illegal escape sequence in JSON string") {
+            assembler.accept('x')
         }
     }
 
@@ -92,8 +91,8 @@ class StringAssemblerTest {
         assembler.accept('a')
         assembler.accept('\\')
         assembler.accept('u')
-        assertFailsWith<ParseException> { assembler.accept('x') }.let {
-            expect("Illegal Unicode sequence in JSON string") { it.message }
+        shouldThrow<ParseException>("Illegal Unicode sequence in JSON string") {
+            assembler.accept('x')
         }
     }
 

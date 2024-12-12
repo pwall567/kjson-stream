@@ -2,7 +2,7 @@
  * @(#) JSONCoStreamerTest.kt
  *
  * kjson-stream  JSON Kotlin streaming library
- * Copyright (c) 2023 Peter Wall
+ * Copyright (c) 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,10 @@
 package io.kjson
 
 import kotlin.test.Test
-import kotlin.test.assertTrue
-import kotlin.test.expect
 import kotlinx.coroutines.runBlocking
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldBeType
 
 import io.kjson.JSON.asString
 import net.pwall.pipeline.accept
@@ -41,8 +42,8 @@ class JSONCoStreamerTest {
         for (ch in json)
             streamer.accept(ch.code)
         with(streamer.result) {
-            assertTrue(this is JSONObject)
-            expect("OK") { this["works"].asString }
+            shouldBeType<JSONObject>()
+            this["works"].asString shouldBe "OK"
         }
     }
 
@@ -51,8 +52,8 @@ class JSONCoStreamerTest {
         val streamer = JSONCoStreamer()
         streamer.accept(json)
         with(streamer.result) {
-            assertTrue(this is JSONObject)
-            expect("OK") { this["works"].asString }
+            shouldBeType<JSONObject>()
+            this["works"].asString shouldBe "OK"
         }
     }
 
@@ -61,8 +62,8 @@ class JSONCoStreamerTest {
         val streamer = JSONCoStreamer()
         streamer.accept(json)
         with(streamer.result) {
-            assertTrue(this is JSONObject)
-            expect("OK") { this["works"].asString }
+            shouldBeType<JSONObject>()
+            this["works"].asString shouldBe "OK"
         }
     }
 
@@ -71,8 +72,8 @@ class JSONCoStreamerTest {
         val streamer = JSONCoStreamer()
         streamer.accept(json)
         with(streamer.result) {
-            assertTrue(this is JSONInt)
-            expect(0) { value }
+            shouldBeType<JSONInt>()
+            value shouldBe 0
         }
     }
 

@@ -2,7 +2,7 @@
  * @(#) KeywordAssemblerTest.kt
  *
  * kjson-stream  JSON Kotlin streaming library
- * Copyright (c) 2023 Peter Wall
+ * Copyright (c) 2023, 2024 Peter Wall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,9 @@
 package io.kjson.stream
 
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.test.expect
+
+import io.kstuff.test.shouldBe
+import io.kstuff.test.shouldThrow
 
 import io.kjson.JSONBoolean
 import io.kjson.parser.ParseException
@@ -41,31 +39,31 @@ class KeywordAssemblerTest {
     @Test fun `should accept keyword`() {
         val assembler = KeywordAssembler("true", JSONBoolean.TRUE, rootPointer)
         for (ch in "rue") {
-            assertFalse(assembler.complete)
-            assertFalse(assembler.valid)
+            assembler.complete shouldBe false
+            assembler.valid shouldBe false
             assembler.accept(ch)
         }
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
-        expect(JSONBoolean.TRUE) { assembler.value }
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
+        assembler.value shouldBe JSONBoolean.TRUE
     }
 
     @Test fun `should return null`() {
         val assembler = KeywordAssembler("null", null, rootPointer)
         for (ch in "ull") {
-            assertFalse(assembler.complete)
-            assertFalse(assembler.valid)
+            assembler.complete shouldBe false
+            assembler.valid shouldBe false
             assembler.accept(ch)
         }
-        assertTrue(assembler.complete)
-        assertTrue(assembler.valid)
-        assertNull(assembler.value)
+        assembler.complete shouldBe true
+        assembler.valid shouldBe true
+        assembler.value shouldBe null
     }
 
     @Test fun `should fail on incorrect keyword`() {
         val assembler = KeywordAssembler("true", JSONBoolean.TRUE, rootPointer)
-        assertFailsWith<ParseException> { assembler.accept('e') }.let {
-            expect("Unrecognised JSON keyword") { it.message }
+        shouldThrow<ParseException>("Unrecognised JSON keyword") {
+            assembler.accept('e')
         }
     }
 
