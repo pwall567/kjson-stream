@@ -27,6 +27,10 @@ package io.kjson
 
 import java.util.function.IntConsumer
 
+import io.jstuff.json.JSONFunctions.isSpaceCharacter
+import io.jstuff.pipeline.AbstractIntObjectPipeline
+import io.jstuff.pipeline.Acceptor
+
 import io.kjson.JSONStreamer.Companion.getAssembler
 import io.kjson.parser.ParseException
 import io.kjson.parser.ParseOptions
@@ -34,9 +38,6 @@ import io.kjson.parser.ParserConstants.BOM
 import io.kjson.parser.ParserErrors.ILLEGAL_SYNTAX
 import io.kjson.stream.Assembler
 import io.kjson.util.AcceptorAdapter
-import net.pwall.json.JSONFunctions.isSpaceCharacter
-import net.pwall.pipeline.AbstractIntObjectPipeline
-import net.pwall.pipeline.Acceptor
 
 /**
  * JSON Lines pipeline class.  The class accepts a stream of characters in JSON Lines form, and emits JSON values as

@@ -26,12 +26,12 @@
 package io.kjson
 
 import kotlin.test.Test
+import io.jstuff.pipeline.ListAcceptor
 
 import io.kstuff.test.shouldBe
 import io.kstuff.test.shouldBeType
 
 import io.kjson.JSON.asInt
-import net.pwall.pipeline.ListAcceptor
 
 class JSONLinesPipelineTest {
 

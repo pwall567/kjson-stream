@@ -25,6 +25,10 @@
 
 package io.kjson
 
+import io.jstuff.json.JSONFunctions.isSpaceCharacter
+import io.kstuff.pipeline.AbstractIntObjectCoPipeline
+import io.kstuff.pipeline.CoAcceptor
+
 import io.kjson.JSONPipeline.State
 import io.kjson.parser.ParseException
 import io.kjson.parser.ParseOptions
@@ -36,9 +40,6 @@ import io.kjson.parser.ParserErrors.MISSING_COMMA_ARRAY
 import io.kjson.parser.ParserErrors.TRAILING_COMMA_ARRAY
 import io.kjson.stream.Assembler
 import io.kjson.util.CoAcceptorAdapter
-import net.pwall.json.JSONFunctions.isSpaceCharacter
-import net.pwall.pipeline.AbstractIntObjectCoPipeline
-import net.pwall.pipeline.CoAcceptor
 
 /**
  * Non-blocking JSON array pipeline class.  The class accepts a stream of characters in the form of a JSON array, and

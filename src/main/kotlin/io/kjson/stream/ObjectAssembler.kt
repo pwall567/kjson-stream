@@ -25,6 +25,8 @@
 
 package io.kjson.stream
 
+import io.jstuff.json.JSONFunctions.isSpaceCharacter
+
 import io.kjson.JSON.asString
 import io.kjson.JSONObject
 import io.kjson.JSONStreamer.Companion.getAssembler
@@ -39,7 +41,7 @@ import io.kjson.parser.ParserErrors.MISSING_COLON
 import io.kjson.parser.ParserErrors.MISSING_COMMA_OBJECT
 import io.kjson.parser.ParserErrors.OBJECT_INCOMPLETE
 import io.kjson.parser.ParserErrors.TRAILING_COMMA_OBJECT
-import net.pwall.json.JSONFunctions.isSpaceCharacter
+import io.kjson.util.BuilderException
 
 /**
  * Streaming [Assembler] implementation to process objects.
@@ -64,7 +66,6 @@ class ObjectAssembler(
     private var child: Assembler = Assembler.NullAssembler
     private val builder = JSONObject.Builder(
         duplicateKeyOption = parseOptions.objectKeyDuplicate,
-        errorKey = pointer,
     )
     private var name = ""
     private var ignore = false
@@ -154,8 +155,14 @@ class ObjectAssembler(
                     consumed = child.accept(ch)
                     if (child.complete) {
                         val value = child.value
-                        if (!ignore)
-                            builder.add(name, value)
+                        if (!ignore) {
+                            try {
+                                builder.add(name, value)
+                            }
+                            catch (e: BuilderException) {
+                                throw ParseException(e.text, "$pointer/$name")
+                            }
+                        }
                         state = State.COMMA_EXPECTED
                     }
                 }

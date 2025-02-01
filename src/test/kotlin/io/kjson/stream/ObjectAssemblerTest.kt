@@ -149,7 +149,7 @@ class ObjectAssemblerTest {
         val assembler = ObjectAssembler(parseOptions, "/test9", 0)
         for (ch in "\"abc\":0,\"abc\":9")
             assembler.accept(ch)
-        shouldThrow<JSONException>("Duplicate key - abc, at /test9") {
+        shouldThrow<JSONException>("Duplicate key, at /test9/abc") {
             assembler.accept('}')
         }
     }

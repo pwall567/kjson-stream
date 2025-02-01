@@ -29,7 +29,7 @@ import kotlin.test.Test
 
 import io.kstuff.test.shouldBe
 
-import net.pwall.pipeline.ListAcceptor
+import io.jstuff.pipeline.ListAcceptor
 
 class JSONPipelineTest {
 

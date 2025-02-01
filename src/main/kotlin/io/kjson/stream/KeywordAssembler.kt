@@ -25,12 +25,13 @@
 
 package io.kjson.stream
 
+import io.jstuff.json.JSONFunctions.isSpaceCharacter
+
 import io.kjson.JSONValue
 import io.kjson.parser.ParseException
 import io.kjson.parser.ParserErrors.ILLEGAL_SYNTAX
 import io.kjson.parser.ParserErrors.INVALID_KEYWORD
 import io.kjson.parser.ParserErrors.KEYWORD_INCOMPLETE
-import net.pwall.json.JSONFunctions.isSpaceCharacter
 
 /**
  * Streaming [Assembler] implementation to process keywords (`true`, `false` and `null`).

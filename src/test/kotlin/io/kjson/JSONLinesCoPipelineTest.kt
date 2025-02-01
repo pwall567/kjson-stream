@@ -31,9 +31,10 @@ import kotlinx.coroutines.runBlocking
 import io.kstuff.test.shouldBe
 import io.kstuff.test.shouldBeType
 
+import io.kstuff.pipeline.ListCoAcceptor
+import io.kstuff.pipeline.accept
+
 import io.kjson.JSON.asInt
-import net.pwall.pipeline.ListCoAcceptor
-import net.pwall.pipeline.accept
 
 class JSONLinesCoPipelineTest {
 

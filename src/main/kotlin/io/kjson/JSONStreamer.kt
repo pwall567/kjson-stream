@@ -27,6 +27,9 @@ package io.kjson
 
 import java.io.Reader
 
+import io.jstuff.json.JSONFunctions.isSpaceCharacter
+import io.jstuff.pipeline.AbstractIntAcceptor
+
 import io.kjson.parser.ParseException
 import io.kjson.parser.ParseOptions
 import io.kjson.parser.ParserConstants.BOM
@@ -40,8 +43,6 @@ import io.kjson.stream.KeywordAssembler
 import io.kjson.stream.NumberAssembler
 import io.kjson.stream.ObjectAssembler
 import io.kjson.stream.StringAssembler
-import net.pwall.json.JSONFunctions.isSpaceCharacter
-import net.pwall.pipeline.AbstractIntAcceptor
 
 /**
  * A streaming JSON parser.

@@ -25,6 +25,9 @@
 
 package io.kjson
 
+import io.jstuff.json.JSONFunctions.isSpaceCharacter
+import io.kstuff.pipeline.AbstractIntCoAcceptor
+
 import io.kjson.JSONStreamer.Companion.getAssembler
 import io.kjson.JSONStreamer.State
 import io.kjson.parser.ParseException
@@ -35,8 +38,6 @@ import io.kjson.parser.ParserErrors.EXCESS_CHARS
 import io.kjson.parser.ParserErrors.ILLEGAL_SYNTAX
 import io.kjson.parser.ParserErrors.JSON_INCOMPLETE
 import io.kjson.stream.Assembler
-import net.pwall.json.JSONFunctions.isSpaceCharacter
-import net.pwall.pipeline.AbstractIntCoAcceptor
 
 /**
  * A non-blocking streaming JSON parser.

@@ -25,14 +25,15 @@
 
 package io.kjson.stream
 
+import io.jstuff.json.JSONFunctions.ILLEGAL_CHAR
+import io.jstuff.json.JSONFunctions.ILLEGAL_ESCAPE_SEQUENCE
+import io.jstuff.json.JSONFunctions.ILLEGAL_UNICODE_SEQUENCE
+import io.jstuff.json.JSONFunctions.UNTERMINATED_STRING
+import io.jstuff.json.JSONFunctions.isSpaceCharacter
+
 import io.kjson.JSONString
 import io.kjson.parser.ParseException
 import io.kjson.parser.ParserErrors.ILLEGAL_SYNTAX
-import net.pwall.json.JSONFunctions.ILLEGAL_CHAR
-import net.pwall.json.JSONFunctions.ILLEGAL_ESCAPE_SEQUENCE
-import net.pwall.json.JSONFunctions.ILLEGAL_UNICODE_SEQUENCE
-import net.pwall.json.JSONFunctions.UNTERMINATED_STRING
-import net.pwall.json.JSONFunctions.isSpaceCharacter
 
 /**
  * Streaming [Assembler] implementation to process strings.

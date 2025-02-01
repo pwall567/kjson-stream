@@ -27,6 +27,10 @@ package io.kjson
 
 import java.util.function.IntConsumer
 
+import io.jstuff.json.JSONFunctions.isSpaceCharacter
+import io.jstuff.pipeline.AbstractIntObjectPipeline
+import io.jstuff.pipeline.Acceptor
+
 import io.kjson.parser.ParseException
 import io.kjson.parser.ParseOptions
 import io.kjson.parser.ParserConstants.BOM
@@ -37,9 +41,6 @@ import io.kjson.parser.ParserErrors.MISSING_COMMA_ARRAY
 import io.kjson.parser.ParserErrors.TRAILING_COMMA_ARRAY
 import io.kjson.stream.Assembler
 import io.kjson.util.AcceptorAdapter
-import net.pwall.json.JSONFunctions.isSpaceCharacter
-import net.pwall.pipeline.AbstractIntObjectPipeline
-import net.pwall.pipeline.Acceptor
 
 /**
  * JSON array pipeline class.  The class accepts a stream of characters in the form of a JSON array, and emits JSON

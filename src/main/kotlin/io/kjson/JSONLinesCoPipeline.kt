@@ -25,6 +25,10 @@
 
 package io.kjson
 
+import io.jstuff.json.JSONFunctions.isSpaceCharacter
+import io.kstuff.pipeline.AbstractIntObjectCoPipeline
+import io.kstuff.pipeline.CoAcceptor
+
 import io.kjson.JSONLinesPipeline.State
 import io.kjson.JSONStreamer.Companion.getAssembler
 import io.kjson.parser.ParseException
@@ -33,9 +37,6 @@ import io.kjson.parser.ParserConstants.BOM
 import io.kjson.parser.ParserErrors.ILLEGAL_SYNTAX
 import io.kjson.stream.Assembler
 import io.kjson.util.CoAcceptorAdapter
-import net.pwall.json.JSONFunctions.isSpaceCharacter
-import net.pwall.pipeline.AbstractIntObjectCoPipeline
-import net.pwall.pipeline.CoAcceptor
 
 /**
  * Non-blocking JSON Lines pipeline class.  The class accepts a stream of characters in JSON Lines form, and emits JSON

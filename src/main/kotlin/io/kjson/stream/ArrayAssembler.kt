@@ -27,7 +27,6 @@ package io.kjson.stream
 
 import io.kjson.JSONArray
 import io.kjson.JSONPipeline
-import io.kjson.JSONValue
 import io.kjson.parser.ParseException
 import io.kjson.parser.ParseOptions
 import io.kjson.parser.ParserErrors.ARRAY_INCOMPLETE

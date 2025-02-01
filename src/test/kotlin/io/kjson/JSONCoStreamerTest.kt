@@ -31,8 +31,9 @@ import kotlinx.coroutines.runBlocking
 import io.kstuff.test.shouldBe
 import io.kstuff.test.shouldBeType
 
+import io.kstuff.pipeline.accept
+
 import io.kjson.JSON.asString
-import net.pwall.pipeline.accept
 
 class JSONCoStreamerTest {
 

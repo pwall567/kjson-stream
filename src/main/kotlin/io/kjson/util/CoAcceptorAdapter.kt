@@ -25,8 +25,8 @@
 
 package io.kjson.util
 
-import net.pwall.pipeline.BaseAbstractCoAcceptor
-import net.pwall.pipeline.CoAcceptor
+import io.kstuff.pipeline.BaseAbstractCoAcceptor
+import io.kstuff.pipeline.CoAcceptor
 
 /**
  * Adapter class to allow lambda to be used as a [CoAcceptor].
