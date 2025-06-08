@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/pwall567/kjson-stream/actions/workflows/build.yml/badge.svg)](https://github.com/pwall567/kjson-stream/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Kotlin](https://img.shields.io/static/v1?label=Kotlin&message=v2.0.21&color=7f52ff&logo=kotlin&logoColor=7f52ff)](https://github.com/JetBrains/kotlin/releases/tag/v2.0.21)
-[![Maven Central](https://img.shields.io/maven-central/v/io.kjson/kjson-stream?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.kjson%22%20AND%20a:%22kjson-stream%22)
+[![Maven Central](https://img.shields.io/maven-central/v/io.kjson/kjson-stream?label=Maven%20Central)](https://central.sonatype.com/artifact/io.kjson/kjson-stream)
 
 JSON Kotlin streaming library
 
@@ -154,25 +154,25 @@ case takes a `suspend` lambda:
 
 ## Dependency Specification
 
-The latest version of the library is 3.3, and it may be obtained from the Maven Central repository.
+The latest version of the library is 3.4, and it may be obtained from the Maven Central repository.
 
 ### Maven
 ```xml
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-stream</artifactId>
-      <version>3.3</version>
+      <version>3.4</version>
     </dependency>
 ```
 ### Gradle
 ```groovy
-    implementation "io.kjson:kjson-stream:3.3"
+    implementation "io.kjson:kjson-stream:3.4"
 ```
 ### Gradle (kts)
 ```kotlin
-    implementation("io.kjson:kjson-stream:3.3")
+    implementation("io.kjson:kjson-stream:3.4")
 ```
 
 Peter Wall
 
-2025-02-01
+2025-06-07

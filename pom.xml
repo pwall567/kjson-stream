@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kjson-stream</artifactId>
-  <version>3.3</version>
+  <version>3.4</version>
   <name>JSON Kotlin streaming library</name>
   <description>JSON Kotlin streaming library</description>
   <packaging>jar</packaging>
@@ -63,7 +63,7 @@
     <dependency>
       <groupId>io.kjson</groupId>
       <artifactId>kjson-core</artifactId>
-      <version>10.0</version>
+      <version>10.1</version>
     </dependency>
     <dependency>
       <groupId>io.jstuff</groupId>
@@ -78,7 +78,7 @@
     <dependency>
       <groupId>io.jstuff</groupId>
       <artifactId>json-functions</artifactId>
-      <version>2.0</version>
+      <version>2.1</version>
     </dependency>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
@@ -87,7 +87,7 @@
     <dependency>
       <groupId>io.kstuff</groupId>
       <artifactId>should-test</artifactId>
-      <version>4.4</version>
+      <version>4.5</version>
       <scope>test</scope>
     </dependency>
     <dependency>
